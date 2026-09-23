@@ -10,10 +10,10 @@ const road = {
   laneWidth: 80
 };
 
-const player = {
-  x: canvas.width / 2 - 25,
+const bike = {
+  x: canvas.width / 2 - 35,
   y: canvas.height - 120,
-  width: 50,
+  width: 70,
   height: 90,
   speed: 8,
   moveLeft: false,
@@ -30,7 +30,7 @@ let lastSpawn = 0;
 function resetGame() {
   obstacles = [];
   score = 0;
-  player.x = canvas.width / 2 - 25;
+  bike.x = canvas.width / 2 - 35;
   scoreLabel.textContent = "Score: 0";
   lastSpawn = 0;
   lastTime = 0;
@@ -38,9 +38,9 @@ function resetGame() {
 
 function spawnObstacle() {
   const lane = Math.floor(Math.random() * road.laneCount);
-  const x = road.x + lane * road.laneWidth + 10;
-  const width = 50;
-  const height = 90;
+  const x = road.x + lane * road.laneWidth + 12;
+  const width = 52;
+  const height = 62;
 
   obstacles.push({
     x,
@@ -54,12 +54,12 @@ function spawnObstacle() {
 function update(delta) {
   if (!gameRunning) return;
 
-  if (player.moveLeft) player.x -= player.speed;
-  if (player.moveRight) player.x += player.speed;
+  if (bike.moveLeft) bike.x -= bike.speed;
+  if (bike.moveRight) bike.x += bike.speed;
 
-  player.x = Math.max(
+  bike.x = Math.max(
     road.x,
-    Math.min(player.x, road.x + road.width - player.width)
+    Math.min(bike.x, road.x + road.width - bike.width)
   );
 
   score += delta * 0.02;
@@ -71,15 +71,15 @@ function update(delta) {
   }
 
   for (let i = obstacles.length - 1; i >= 0; i--) {
-    const car = obstacles[i];
-    car.y += car.speed;
+    const obstacle = obstacles[i];
+    obstacle.y += obstacle.speed;
 
-    if (checkCollision(player, car)) {
+    if (checkCollision(bike, obstacle)) {
       endGame();
       return;
     }
 
-    if (car.y > canvas.height) {
+    if (obstacle.y > canvas.height) {
       obstacles.splice(i, 1);
     }
   }
@@ -110,39 +110,98 @@ function drawRoad() {
   ctx.fillRect(road.x + road.width, 0, 8, canvas.height);
 }
 
-function drawPlayerCar() {
-  ctx.fillStyle = "#2ecc71";
-  ctx.fillRect(player.x, player.y, player.width, player.height);
+function drawBike() {
+  const x = bike.x;
+  const y = bike.y;
+  const w = bike.width;
+  const h = bike.height;
 
-  ctx.fillStyle = "#eaf2ff";
-  ctx.fillRect(player.x + 8, player.y + 12, player.width - 16, 20);
+  ctx.fillStyle = "#f59e0b";
+  ctx.beginPath();
+  ctx.roundRect(x + 16, y + 18, w - 28, 28, 12);
+  ctx.fill();
 
-  ctx.fillStyle = "#f1c40f";
-  ctx.fillRect(player.x + 8, player.y + 2, 10, 8);
-  ctx.fillRect(player.x + player.width - 18, player.y + 2, 10, 8);
+  ctx.fillStyle = "#fbbf24";
+  ctx.beginPath();
+  ctx.roundRect(x + 27, y + 40, w - 42, 18, 10);
+  ctx.fill();
+
+  ctx.strokeStyle = "#e2e8f0";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(x + 18, y + 22);
+  ctx.lineTo(x + 8, y + 54);
+  ctx.lineTo(x + 34, y + 80);
+  ctx.moveTo(x + 52, y + 22);
+  ctx.lineTo(x + 62, y + 54);
+  ctx.lineTo(x + 36, y + 82);
+  ctx.stroke();
+
+  ctx.strokeStyle = "#f8fafc";
+  ctx.beginPath();
+  ctx.moveTo(x + 22, y + 56);
+  ctx.lineTo(x + 6, y + 68);
+  ctx.moveTo(x + 52, y + 56);
+  ctx.lineTo(x + 66, y + 68);
+  ctx.stroke();
+
+  ctx.fillStyle = "#111827";
+  ctx.beginPath();
+  ctx.arc(x + 16, y + 78, 12, 0, Math.PI * 2);
+  ctx.arc(x + 56, y + 78, 12, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#f8fafc";
+  ctx.beginPath();
+  ctx.arc(x + 16, y + 78, 5, 0, Math.PI * 2);
+  ctx.arc(x + 56, y + 78, 5, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#38bdf8";
+  ctx.beginPath();
+  ctx.arc(x + 34, y + 12, 10, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#fca5a5";
+  ctx.fillRect(x + 27, y + 2, 14, 10);
+
+  ctx.strokeStyle = "#f8fafc";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(x + 34, y + 22);
+  ctx.lineTo(x + 28, y + 36);
+  ctx.moveTo(x + 34, y + 22);
+  ctx.lineTo(x + 42, y + 36);
+  ctx.stroke();
 }
 
-function drawEnemyCar(car) {
-  ctx.fillStyle = "#e74c3c";
-  ctx.fillRect(car.x, car.y, car.width, car.height);
+function drawObstacle(obstacle) {
+  const x = obstacle.x;
+  const y = obstacle.y;
+  const w = obstacle.width;
+  const h = obstacle.height;
 
-  ctx.fillStyle = "#ecf0f1";
-  ctx.fillRect(car.x + 8, car.y + 12, car.width - 16, 20);
+  ctx.fillStyle = "#f97316";
+  ctx.beginPath();
+  ctx.moveTo(x + w / 2, y);
+  ctx.lineTo(x + w, y + h);
+  ctx.lineTo(x, y + h);
+  ctx.closePath();
+  ctx.fill();
 
-  ctx.fillStyle = "#f1c40f";
-  ctx.fillRect(car.x + 8, car.y + car.height - 10, 10, 8);
-  ctx.fillRect(car.x + car.width - 18, car.y + car.height - 10, 10, 8);
+  ctx.fillStyle = "#fdba74";
+  ctx.fillRect(x + 14, y + 18, w - 28, 18);
 }
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawRoad();
 
-  for (const car of obstacles) {
-    drawEnemyCar(car);
+  for (const obstacle of obstacles) {
+    drawObstacle(obstacle);
   }
 
-  drawPlayerCar();
+  drawBike();
 
   if (!gameRunning) {
     ctx.fillStyle = "rgba(0,0,0,0.4)";
@@ -191,15 +250,15 @@ function endGame() {
 document.addEventListener("keydown", (event) => {
   const key = event.key.toLowerCase();
 
-  if (key === "arrowleft" || key === "a") player.moveLeft = true;
-  if (key === "arrowright" || key === "d") player.moveRight = true;
+  if (key === "arrowleft" || key === "a") bike.moveLeft = true;
+  if (key === "arrowright" || key === "d") bike.moveRight = true;
 });
 
 document.addEventListener("keyup", (event) => {
   const key = event.key.toLowerCase();
 
-  if (key === "arrowleft" || key === "a") player.moveLeft = false;
-  if (key === "arrowright" || key === "d") player.moveRight = false;
+  if (key === "arrowleft" || key === "a") bike.moveLeft = false;
+  if (key === "arrowright" || key === "d") bike.moveRight = false;
 });
 
 startBtn.addEventListener("click", startGame);

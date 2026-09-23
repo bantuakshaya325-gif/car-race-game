@@ -8,7 +8,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #111827, #1f2937);
+  background: linear-gradient(135deg, #0f172a, #1e293b);
   font-family: Arial, sans-serif;
   color: white;
 }
@@ -32,7 +32,7 @@ h1 {
 }
 
 button {
-  background: #ff6b6b;
+  background: #f97316;
   color: white;
   border: none;
   border-radius: 10px;
@@ -43,7 +43,7 @@ button {
 }
 
 button:hover {
-  background: #ff4d4d;
+  background: #ea580c;
 }
 
 #scoreLabel {
@@ -53,7 +53,7 @@ button:hover {
 
 canvas {
   background: #2f2f2f;
-  border: 4px solid #fff;
+  border: 4px solid #f8fafc;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
